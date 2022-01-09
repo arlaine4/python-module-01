@@ -38,9 +38,11 @@ class Recipe:
 		if not cooking_lvl:
 			self.errors.append('Missing cooking level for recipe')
 			return
-		elif type(cooking_lvl) not in [int, float]:
+		elif type(cooking_lvl) is not int:
 			self.errors.append('Wrong type for recipe cooking_lvl')
 			return
+		elif type(cooking_lvl) is int and (cooking_lvl < 1 or cooking_lvl > 5):
+			self.errors.append('Invalid cooking lvl, must be between 1 and 5.')
 		self.cooking_lvl = cooking_lvl
 
 	def set_cooking_time(self, cooking_time):
@@ -49,6 +51,9 @@ class Recipe:
 			return
 		elif type(cooking_time) not in [int, float]:
 			self.errors.append('Wrong type for recipe cooking_time')
+			return
+		elif type(cooking_time) in [int, float] and (cooking_time < 0):
+			self.errors.append("Can't have a negative cooking time.")
 			return
 		self.cooking_time = cooking_time
 
