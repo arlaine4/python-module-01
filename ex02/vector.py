@@ -197,3 +197,6 @@ class Vector:
 
     def __str__(self):
         return f'Vector({self.values})'
+
+    def __repr__(self):
+        return f'shape : {self.shape}\nvalues : {self.values}'
