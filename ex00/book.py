@@ -5,6 +5,9 @@ class Book:
     def __init__(self, name):
         self.errors = []
         self.new_book = True
+        self.name = None
+        self.creation_date = None
+        self.last_update = None
         self.set_name(name)
         self.set_last_update()
         self.set_creation_date()
@@ -43,7 +46,7 @@ class Book:
         for recipe in self.recipes_list[key]:
             recipe_txt += f'\n{recipe.__str__()}'
         return recipe_txt
-	
+
     def get_recipe_by_types(self, recipe_type):
         print(self.get_format_recipe(recipe_type))
 
@@ -61,35 +64,12 @@ class Book:
             print(f"{name} not in recipe list.")
         else:
             print(recipe.__str__())
-        """elif name in self.recipes_list['starter']:
-           print(self.recipes_list['starter'][name].__str__())
-        elif name in self.recipes_list['lunch']:
-           print(self.recipes_list['lunch'][name].__str__())
-        else:
-           print(self.recipes_list['dessert'][name].__str__())"""
 
     def	__str__(self):
-        format_dessert = None
-        format_starter = None
-        format_lunch = None
         txt = f'\n\n{self.name}\n\ncreation_date : {self.creation_date}\n' \
               f'last_update : {self.last_update}\n' \
-              f"- starter recipes : {self.get_format_recipe('starter')}\n" \
-              f"- lunch recipes : {self.get_format_recipe('lunch')}\n" \
-              f"- dessert recipes : {self.get_format_recipe('dessert')}\n"
+              f"- starter recipes : {self.get_format_recipe('starter')}\n\n" \
+              f"- lunch recipes : {self.get_format_recipe('lunch')}\n\n" \
+              f"- dessert recipes : {self.get_format_recipe('dessert')}\n\n"
         return txt
-        """if not self.recipes_list['starter']:
-            format_starter = None
-        if self.recipes_list['starter']:
-            # Do the get_format_recipe inside recipe class in order to return __str__ into a string
-            format_starter = [recipe.get_format_recipe for recipe in self.recipes_list['starter']]
-        elif not self.recipes_list['lunch']:
-            format_lunch = None
-        elif self.recipes_list['lunch']:
-            format_lunch = None
-        elif not self.recipes_list['dessert']:
-            format_dessert = None
-        elif self.recipes_list['dessert']:
-            format_dessert = None
-        return f"{self.name}\n\ncreation_date : {self.creation_date}\nlast_update: {self.last_update}\nstarters : {format_starter}\nlunch : {format_lunch}\ndessert : {format_dessert}"""
 
