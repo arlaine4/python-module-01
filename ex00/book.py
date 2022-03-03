@@ -1,11 +1,12 @@
+import sys
 from datetime import datetime
-
+from recipe import Recipe
 
 class Book:
-    def __init__(self, name):
+    def __init__(self, name=''):
         self.errors = []
         self.new_book = True
-        self.name = None
+        self.name = name
         self.creation_date = None
         self.last_update = None
         self.set_name(name)
@@ -14,6 +15,12 @@ class Book:
         self.recipes_list = {'starter': [],
                              'lunch': [],
                              'dessert': []}
+        self.verif_valid_params()
+
+    def verif_valid_params(self):
+        if len(self.errors) != 0:
+            for i, error in enumerate(self.errors):
+                print(f"{i} : {error}")
 
     def set_name(self, name):
         if not name:
@@ -31,15 +38,19 @@ class Book:
         else:
             self.last_update = '-'
 
-    def	set_creation_date(self):
+    def set_creation_date(self):
         self.new_book = False
         now = datetime.now()
         self.creation_date = now.strftime("%d/%m/%Y %H:%M:%S")
 
     def add_recipe(self, recipe):
-        self.recipes_list[recipe.recipe_type].append(recipe)
-        if not self.new_book:
-            self.set_last_update()
+        if type(recipe) is Recipe:
+            self.recipes_list[recipe.recipe_type].append(recipe)
+            if not self.new_book:
+                self.set_last_update()
+        else:
+            print(f'Invalid "{recipe}" for new recipe')
+            sys.exit()
 
     def get_format_recipe(self, key):
         recipe_txt = ''
@@ -48,7 +59,10 @@ class Book:
         return recipe_txt
 
     def get_recipe_by_types(self, recipe_type):
-        print(self.get_format_recipe(recipe_type))
+        if type(recipe_type) is str and recipe_type in self.recipes_list.keys():
+            print(self.get_format_recipe(recipe_type))
+        else:
+            print(f'\nInvalid recipe_type {recipe_type}\n\n')
 
     def get_type_for_recipe_name(self, name):
         types = ['starter', 'lunch', 'dessert']
@@ -64,6 +78,7 @@ class Book:
             print(f"{name} not in recipe list.")
         else:
             print(recipe.__str__())
+            return recipe
 
     def	__str__(self):
         txt = f'\n\n{self.name}\n\ncreation_date : {self.creation_date}\n' \

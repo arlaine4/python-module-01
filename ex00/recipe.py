@@ -68,8 +68,11 @@ class Recipe:
         self.cooking_time = cooking_time
 
     def set_ingredients(self, ingredients):
-        if not ingredients:
+        if not ingredients and type(ingredients) is list:
             self.errors.append('Missing ingredients for recipe')
+            return
+        elif type(ingredients) is not list:
+            self.errors.append(f'Invalid type {type(ingredients)} for ingredients initialization')
             return
         elif not check_valid_ingredients(ingredients):
             self.errors.append('Wrong type for one or more recipe ingredients')
