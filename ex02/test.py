@@ -1,5 +1,4 @@
 from vector import Vector
 
-v1 = Vector([2., 4., 10.])
-v2 = Vector([3., 1.5, 5.])
-print(2 * v1)
+# v1 = Vector([2., 4., 10.])
+# v2 = Vector([3., 1.5, 5.])
