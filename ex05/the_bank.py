@@ -9,14 +9,16 @@ class Account:
         self.id = self.ID_COUNT
         self.name = name
         self.__dict__.update(kwargs)
-        self.value = 0
         Account.ID_COUNT += 1
 
     def transfer(self, amount):
         self.value += amount
 
     def __str__(self):
-        return f'Account name : {self.name}\n - amount : {self.value}'
+        if 'value' in self.__dict__.keys():
+            return f'Account name : {self.name}\n - amount : {self.value}'
+        else:
+            return f'Account name : {self.name}\n - amount : 0'
 
 
 class Bank:
@@ -54,23 +56,27 @@ class Bank:
         # Getting id of origin account from it's name if the account is valid
         if type(origin) is str:
             origin = self.check_and_return_account_idx(origin)
+            if type(origin) is not int:
+                sys.exit('Invalid account origin')
         # Checking dest parameter validity
         if not dest or type(dest) not in [str, int]:
             sys.exit('Invalid account dest')
         # Getting id of dest account from it's name if the account is valid
         if type(dest) is str:
             dest = self.check_and_return_account_idx(dest)
+            if type(dest) is not int:
+                sys.exit('Invalid dest account')
         # Checking amount parameter validity
-        if not float or type(amount) is not float or amount < 0:
+        if type(amount) not in [int, float] or amount < 0:
             sys.exit('Invalid amount')
         # Transfer
-        if origin and dest:
-            if origin.value >= amount:
-                dest.transfer(amount)
-                return True
-            else:
-                print('Not enough money on origin for transfer')
-                return False
+        if self.account[origin].value >= amount:
+            self.account[dest].transfer(amount)
+            self.account[origin].value -= amount
+            return True
+        else:
+            print('Not enough money on origin for transfer')
+            return False
 
     def fix_account(self, account):
         pass
@@ -87,8 +93,9 @@ class Bank:
 
 if __name__ == "__main__":
     bank1 = Bank()
-    account1 = Account('test')
+    account1 = Account('test', value=0)
+    account2 = Account('test2', value=1000)
     bank1.add(account1)
-    account2 = Account('test')
     bank1.add(account2)
+    bank1.transfer('test', 'test', 200)
     print(bank1)
