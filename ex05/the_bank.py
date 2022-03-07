@@ -32,6 +32,8 @@ class Bank:
     def add(self, account):
         if isinstance(account, Account) and self.check_account_not_in_accounts(account):
             self.account.append(account)
+        elif not isinstance(account, Account):
+            print(f'{account} is not an instance of Account class, not adding it to the bank')
         else:
             print(f'Invalid account {account.name}, not adding it to the bank')
 
@@ -93,9 +95,8 @@ class Bank:
         """
         Verify Account's instance attributes
         """
-        found_extras = {'b': True, 'zip': False, 'addr': False, 'name': False, 'id': False, 'value': False,
-                        'odd_attributes_number': len(dir(account)) % 2 == 0}
-        for attr in dir(account):
+        found_extras = {'b': True, 'zip': False, 'addr': False, 'name': False, 'id': False, 'value': False}
+        for attr in account.__dict__.keys():
             if attr.startswith('b'):
                 found_extras['b'] = False
             elif attr.startswith('zip'):
@@ -108,7 +109,14 @@ class Bank:
                 found_extras['id'] = True
             elif attr == 'value':
                 found_extras['value'] = True
-        if False in list(found_extras.values())[:-1]:
+        print(found_extras)
+        if False in list(found_extras.values()):
+            if found_extras['zip'] is True and found_extras['addr'] is False:
+                found_extras['addr'] = True
+            if found_extras['addr'] is True and found_extras['zip'] is False:
+                found_extras['zip'] = True
+            if False not in list(found_extras.values()):
+                return True
             if mode_fix:
                 return found_extras
             return False
@@ -120,6 +128,7 @@ class Bank:
         """
         for account_idx in accounts_lst:
             if not Bank.verify_valid_attributes_account(self.account[account_idx]):
+                print('corrupted ', self.account[account_idx].name)
                 return True
         return False
 
@@ -130,30 +139,34 @@ class Bank:
             return False
         # Getting attributes list and keeping only the ones that needs fixing
         infos_to_fix = Bank.verify_valid_attributes_account(self.account[account], mode_fix=True)
-        final_infos = {}
-        for key in infos_to_fix.keys():
-            if infos_to_fix[key] is False:
-                final_infos[key] = False
-        # Fixing attributes
-        try:
-            for key in final_infos.keys():
-                if key == 'odd_attributes_number':
-                    continue
-                if key in ['zip', 'addr', 'value']:
-                    self.account[account].__dict__[key] = 0
-                if key == 'b':
-                    # Getting index of attribute starting with b in order to delete it
-                    attr_idx = int([i for i in range(len(self.account[account].__dict__.keys())) if
-                                    list(self.account[account].__dict__.keys())[i].startswith('b')][0])
-                    key_to_del = list(self.account[account].__dict__.keys())[attr_idx]
-                    delattr(self.account[account], key_to_del)
-            # Adding a random attribute to make attributes count odd
-            if 'odd_attributes_number' in final_infos and len(dir(self.account[account])) % 2 == 0:
-                self.account[account].random_attribute = None
-            print(f'Account {self.account[account].name} fixed')
-            return True
-        except:
+        if type(infos_to_fix) is bool and len(list(self.account[account].__dict__.keys())) % 2 != 0:
+            print(f"Account {self.account[account].name} doesn't need fixing")
             return False
+        if type(infos_to_fix) is not bool:
+            final_infos = {}
+            for key in infos_to_fix.keys():
+                if infos_to_fix[key] is False:
+                    final_infos[key] = False
+            # Fixing attributes
+            try:
+                for key in final_infos.keys():
+                    if key == 'zip':
+                        self.account[account].__dict__[key] = '100-085'
+                    if key == 'value':
+                        self.account[account].__dict__['value'] = 0
+                    if key == 'b':
+                        # Getting index of attribute starting with b in order to delete it
+                        attr_idx = int([i for i in range(len(self.account[account].__dict__.keys())) if
+                                        list(self.account[account].__dict__.keys())[i].startswith('b')][0])
+                        key_to_del = list(self.account[account].__dict__.keys())[attr_idx]
+                        delattr(self.account[account], key_to_del)
+            except:
+                return False
+        # Adding a random attribute to make attributes count odd
+        if len(list(self.account[account].__dict__.keys())) % 2 == 0:
+            self.account[account].random_attribute = None
+        print(f'Account {self.account[account].name} fixed')
+        return True
 
     def __str__(self):
         to_ret = '\n'
