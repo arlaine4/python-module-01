@@ -1,6 +1,3 @@
-import sys
-
-
 class Account:
     ID_COUNT = 1
 
@@ -93,6 +90,9 @@ class Bank:
 
     @classmethod
     def verify_valid_attributes_account(cls, account, mode_fix=False):
+        """
+        Verify Account's instance attributes
+        """
         found_extras = {'b': True, 'zip': False, 'addr': False, 'name': False, 'id': False, 'value': False,
                         'odd_attributes_number': len(dir(account)) % 2 == 0}
         for attr in dir(account):
@@ -115,20 +115,26 @@ class Bank:
         return True
 
     def verify_corrupted_account(self, accounts_lst):
+        """
+        Verify if dest or origin accounts are corrupted before making a transfer
+        """
         for account_idx in accounts_lst:
             if not Bank.verify_valid_attributes_account(self.account[account_idx]):
                 return True
         return False
 
     def fix_account(self, account):
+        # Getting account index in accounts list by it's name
         account = self.check_and_return_account_idx(account)
         if account is False:
             return False
+        # Getting attributes list and keeping only the ones that needs fixing
         infos_to_fix = Bank.verify_valid_attributes_account(self.account[account], mode_fix=True)
         final_infos = {}
         for key in infos_to_fix.keys():
             if infos_to_fix[key] is False:
                 final_infos[key] = False
+        # Fixing attributes
         try:
             for key in final_infos.keys():
                 if key == 'odd_attributes_number':
@@ -136,10 +142,12 @@ class Bank:
                 if key in ['zip', 'addr', 'value']:
                     self.account[account].__dict__[key] = 0
                 if key == 'b':
+                    # Getting index of attribute starting with b in order to delete it
                     attr_idx = int([i for i in range(len(self.account[account].__dict__.keys())) if
                                     list(self.account[account].__dict__.keys())[i].startswith('b')][0])
                     key_to_del = list(self.account[account].__dict__.keys())[attr_idx]
                     delattr(self.account[account], key_to_del)
+            # Adding a random attribute to make attributes count odd
             if 'odd_attributes_number' in final_infos and len(dir(self.account[account])) % 2 == 0:
                 self.account[account].random_attribute = None
             print(f'Account {self.account[account].name} fixed')
@@ -155,29 +163,3 @@ class Bank:
             else:
                 to_ret += account.__str__() + '\n\n'
         return to_ret
-
-
-if __name__ == "__main__":
-    # PROBLEME WITH ADD_ATTRIBUTES_NUMBER IN
-    bank1 = Bank()
-    account1 = Account('test', value=0)
-    account2 = Account('test2', bonsoir='ok')
-    account_found = Account('test3', value=1000)
-    bank1.add(account1)
-    bank1.add(account2)
-    #bank1.transfer('test2', 'test', 200)
-    bank1.fix_account('test2')
-    #bank1.transfer('test2', 'test', 200)
-    bank1.fix_account('test')
-    bank1.transfer('test2', 'test', 200)
-    bank1.add(account_found)
-    bank1.transfer('test3', 'test2', 200)
-    bank1.fix_account('test3')
-    bank1.transfer('test3', 'test2', 200)
-    bank1.transfer('test2', 'test', 200)
-    print(bank1)
-    #bank1.transfer('test3', 'test2', 200)
-    #bank1.add(account_found)
-    #bank1.transfer('test3', 'test2', 200)
-    #bank1.fix_account('test3')
-    #bank1.transfer('test3', 'test2', 200)
