@@ -2,6 +2,7 @@ import sys
 from datetime import datetime
 from recipe import Recipe
 
+
 class Book:
     def __init__(self, name=''):
         self.errors = []
@@ -32,11 +33,8 @@ class Book:
         self.name = name
 
     def set_last_update(self):
-        if not self.new_book:
-            now = datetime.now()
-            self.last_update = now.strftime("%d/%m/%Y %H:%M:%S")
-        else:
-            self.last_update = '-'
+        now = datetime.now()
+        self.last_update = now.strftime("%d/%m/%Y %H:%M:%S")
 
     def set_creation_date(self):
         self.new_book = False
@@ -60,7 +58,7 @@ class Book:
 
     def get_recipe_by_types(self, recipe_type):
         if type(recipe_type) is str and recipe_type in self.recipes_list.keys():
-            print(self.get_format_recipe(recipe_type))
+            return self.get_format_recipe(recipe_type)
         else:
             print(f'\nInvalid recipe_type {recipe_type}\n\n')
 
@@ -77,7 +75,6 @@ class Book:
         if not in_:
             print(f"{name} not in recipe list.")
         else:
-            print(recipe.__str__())
             return recipe
 
     def	__str__(self):
