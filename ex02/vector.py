@@ -131,12 +131,16 @@ class Vector:
                 res += self.values[i] * other.values[i]
             else:
                 res += self.values[i][0] * other.values[i][0]
-        print(res)
         return res
+
+    def verif_shape(self, other):
+        if self.shape == other.shape or (self.shape[0] == other.shape[1] and self.shape[1] == other.shape[0]):
+            return True
+        return False
 
     def __add__(self, other):
         try:
-            if self.shape == other.shape and isinstance(self.values[0], type(other.values[0])):
+            if self.verif_shape(other) and isinstance(self.values[0], type(other.values[0])):
                 return Vector(self.add_vec_to_vec(other.values))
             else:
                 print('Both vectors must have the same dimensions to perform addition.')
@@ -144,15 +148,11 @@ class Vector:
             print("Can't add scalar to Vector")
 
     def __radd__(self, other):
-        error_msg = "ValueError('A Vector cannot be added to a scalar.')"
-        try:
-            raise ValueError
-        except ValueError:
-            print(error_msg)
+        return self.__add__(other)
 
     def __sub__(self, other):
         try:
-            if self.shape == other.shape and isinstance(self.values[0], type(other.values[0])):
+            if self.verif_shape(other) and isinstance(self.values[0], type(other.values[0])):
                 return Vector(self.sub_vec_to_vec(other.values))
             else:
                 print('Both vectors must have the same dimensions to perform subtraction.')
@@ -160,11 +160,7 @@ class Vector:
             print("Can't subtract scalar to Vector")
 
     def __rsub__(self, other):
-        error_msg = "ValueError('A Vector cannot be subtracted to a scalar.')"
-        try:
-            raise ValueError
-        except ValueError:
-            print(error_msg)
+        return self.__sub__(other)
 
     def __mul__(self, other):
         if type(other) in [int, float]:
@@ -176,24 +172,19 @@ class Vector:
 
     def __rmul__(self, other):
         return self.__mul__(other)
-        error_msg = "ValueError('A scalar cannot be divided by a Vector')"
-        try:
-            raise ValueError
-        except ValueError:
-            print(error_msg)
 
     def __truediv__(self, other):
+        print(self, other)
         if type(other) in [int, float]:
             return Vector(self.div_scalar_to_vec(other))
         else:
             print(f'Can only divide a vector by a scalar, invalid value {other}')
 
     def __rtruediv__(self, other):
-        error_msg = "ValueError('A scalar cannot be divided by a Vector')"
-        try:
-            raise ValueError
-        except ValueError:
-            print(error_msg)
+        if self.shape[0] != 1:
+            print(f'Invalid division')
+        else:
+            return self.__truediv__(other)
 
     def __str__(self):
         return f'Vector({self.values})'
